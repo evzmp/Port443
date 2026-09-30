@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>port 443</title>
+  <meta name="description" content="port 443 — Evan's collection of everything he builds and finds interesting.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233a1648'/><text x='16' y='21' font-family='monospace' font-size='12' font-weight='700' text-anchor='middle' fill='%23e88a34'>443</text></svg>">
+</head>
+<body>
+  <!-- Animated lava-lamp background (rendered by js/background.js) -->
+  <canvas id="bg" aria-hidden="true"></canvas>
+
+  <header class="header blur-band">
+    <nav class="nav">
+      <a href="#projects">Projects</a>
+      <a href="mailto:evanzmp@outlook.com">Contact</a>
+      <a href="about:blank" target="_blank" rel="noopener">CV</a>
+      <a href="#" target="_blank" rel="noopener">
+        Design Portfolio
+        <!-- Material Icons: open_in_new -->
+        <svg class="icon icon--external" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p>Hi, my name is Evan.</p>
+      <p>
+        I am an Electrical &amp; Computer Engineer from Greece. My main interests include<br>
+        cloud, networks, infrastructure, backend, AI, 3D graphics, design &amp; more.
+      </p>
+      <p>This is the place where I collect everything that I build and find interesting.</p>
+      <p>
+        Here are some things I <span class="nowrap">made<!-- Material Icons: arrow_downward -->
+        <svg class="icon icon--down" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg></span>
+      </p>
+    </section>
+
+    <section id="projects" class="showcase" aria-label="Projects">
+      <div class="showcase__row">
+        <div class="showcase__track" data-direction="left">
+          <div class="box" data-box="project-1"><span class="box__label">Project 1</span></div>
+          <div class="box" data-box="project-2"><span class="box__label">Project 2</span></div>
+          <div class="box" data-box="project-3"><span class="box__label">Project 3</span></div>
+          <div class="box" data-box="project-4"><span class="box__label">Project 4</span></div>
+          <div class="box" data-box="project-5"><span class="box__label">Project 5</span></div>
+          <div class="box" data-box="project-6"><span class="box__label">Project 6</span></div>
+        </div>
+      </div>
+      <div class="showcase__row">
+        <div class="showcase__track" data-direction="right">
+          <div class="box" data-box="project-7"><span class="box__label">Project 7</span></div>
+          <div class="box" data-box="project-8"><span class="box__label">Project 8</span></div>
+          <div class="box" data-box="project-9"><span class="box__label">Project 9</span></div>
+          <div class="box" data-box="project-10"><span class="box__label">Project 10</span></div>
+          <div class="box" data-box="project-11"><span class="box__label">Project 11</span></div>
+          <div class="box" data-box="project-12"><span class="box__label">Project 12</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer blur-band">
+    <p class="footer__text"><span class="footer__blend">Made with</span> <span class="footer__emoji">❤️</span><span class="footer__blend">&nbsp;&nbsp;|&nbsp;&nbsp;2026</span></p>
+  </footer>
+
+  <!-- Load-in fade: a cover in the base color that fades away -->
+  <div class="page-fade" aria-hidden="true"></div>
+
+  <script src="js/background.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+/* ==========================================================================
+   port 443 — styles
+   ========================================================================== */
+
+:root {
+  --font: "Source Code Pro", ui-monospace, Consolas, monospace;
+
+  /* Foreground colors are blended with `hard-light`: light tones brighten
+     the background while letting its colors show through, dark tones
+     (the shadow) darken it. The values set how opaque they read. */
+  --fg: #e4e8f9;
+  --box-border: #ced2e6;
+  --box-fill: rgba(10, 16, 40, 0.14);
+  --shadow: #202427;
+  --band-line: rgba(236, 236, 236, 0.15);
+  --bg-tint: rgba(28, 24, 36, 0.75); /* higher alpha = fainter background */
+
+  --gutter: 3rem;
+  --header-pad: 2.9rem; /* space above the header text, mirrored below it */
+  --box-w: 40.125rem;
+  --box-h: 28.5rem;
+  --box-gap: 1rem;
+  --speed: 10; /* carousel speed in px per second */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Base color behind everything (also shown if WebGL is unavailable) */
+  background: #18172a;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex; /* keeps the footer at the bottom on tall screens */
+  flex-direction: column;
+  font-family: var(--font);
+  font-weight: 400;
+  color: var(--fg);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Background canvas ------------------------------------------------------ */
+
+#bg {
+  position: fixed;
+  /* Oversized by 8px on each side so the blur doesn't fade at the edges */
+  top: -8px;
+  left: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+  z-index: -4;
+  display: block;
+  filter: blur(2px);
+}
+
+/* Dark tint over the animated background so it stays very faint */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background: var(--bg-tint);
+}
+
+/* Analog haze + film grain (between the canvas and the content) --------- */
+
+/* Misty fog: drifting pale light, lifted blacks and a soft vignette */
+html::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 45% 35% at 30% 30%, rgba(190, 210, 240, 0.22), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 75% 65%, rgba(170, 180, 230, 0.16), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(120, 140, 190, 0.10), transparent 80%);
+  mix-blend-mode: screen;
+  opacity: 0.4; /* kept subtle so the LED background stays near-black */
+  animation: fog 40s ease-in-out infinite alternate;
+}
+
+@keyframes fog {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(6%, -4%) scale(1.08); }
+  100% { transform: translate(-5%, 3%) scale(1.02); }
+}
+
+/* Coarse, clumpy grain (noise tile is scaled up so the grains get thicker) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.6' intercept='-0.3'/%3E%3CfeFuncG type='linear' slope='1.6' intercept='-0.3'/%3E%3CfeFuncB type='linear' slope='1.6' intercept='-0.3'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 400px 400px;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  animation: grain 0.5s steps(4) infinite;
+}
+
+/* Vignette: darkened edges like an old lens */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 85% 75% at 50% 45%, transparent 55%, rgba(4, 6, 16, 0.55) 100%);
+}
+
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-3%, 2%); }
+  50%  { transform: translate(2%, -4%); }
+  75%  { transform: translate(-2%, -1%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Blending --------------------------------------------------------------- */
+/* Blend is applied on the containers (not per element) so each group is
+   composited once and then blended onto the background. None of the
+   ancestors create a stacking context, so the canvas is the backdrop. */
+
+.nav,
+.intro,
+.footer__blend,
+.showcase__track {
+  mix-blend-mode: hard-light;
+}
+
+.nav,
+.intro,
+.footer__text {
+  text-shadow: 0.08rem 0.1rem 0.05rem var(--shadow);
+}
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: -0.12em;
+  filter: drop-shadow(0.08rem 0.1rem 0.05rem var(--shadow));
+}
+
+/* Blur band --------------------------------------------------------------- */
+/* Screen-wide blurred strip behind the header and footer. The blur is a
+   separate layer (not the element itself) so the text on top can still
+   blend with the page instead of an isolated group. */
+
+.blur-band {
+  position: relative;
+}
+
+.blur-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Thin, discreet light gray line on the edge facing the page content */
+.header::before {
+  border-bottom: 1px solid var(--band-line);
+}
+
+.footer::before {
+  border-top: 1px solid var(--band-line);
+}
+
+.blur-band > * {
+  position: relative; /* paint above the blur layer */
+}
+
+/* Nav -------------------------------------------------------------------- */
+
+.header {
+  padding-bottom: var(--header-pad); /* blur band extends as far below the text as above */
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 8rem;
+  row-gap: 1rem;
+  padding: var(--header-pad) var(--gutter) 0;
+  font-size: 3rem;
+  line-height: 1.2;
+}
+
+.nav a {
+  transition: color 0.2s ease;
+}
+
+/* With hard-light, mixing the color N% toward white makes the rendered
+   result exactly N% closer to white */
+.nav a:hover {
+  color: color-mix(in srgb, var(--fg), #fff 72%);
+}
+
+.nav a:focus-visible {
+  outline: 0.15rem solid currentColor;
+  outline-offset: 0.3rem;
+  border-radius: 0.3rem;
+}
+
+.icon--external {
+  width: 0.9em;
+  height: 0.9em;
+  margin-left: 0.1em;
+  vertical-align: -0.15em;
+}
+
+/* Intro ------------------------------------------------------------------ */
+
+.intro {
+  padding: 3.3rem var(--gutter) 0; /* gap between the header's blur band and the text */
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.intro p {
+  margin: 0 0 1.55rem;
+}
+
+.intro p:last-child {
+  margin-bottom: 0;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.icon--down {
+  margin-left: 0.3em;
+  vertical-align: -0.22em;
+}
+
+/* Showcase carousel ------------------------------------------------------ */
+
+.showcase {
+  padding: 3.4rem 0 4rem;
+}
+
+.showcase__row {
+  overflow: hidden;
+  padding: 0.25rem 0; /* room for the drop shadow */
+  cursor: grab;
+  touch-action: pan-y; /* vertical page scroll still works on touch */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.showcase__row.is-dragging {
+  cursor: grabbing;
+}
+
+.showcase__row + .showcase__row {
+  margin-top: calc(var(--box-gap) - 0.5rem);
+}
+
+/* Position is driven by js/main.js (auto-scroll + drag) */
+.showcase__track {
+  display: flex;
+  width: max-content;
+  filter: drop-shadow(0.1rem 0.15rem 0 var(--shadow));
+  will-change: transform;
+}
+
+.box {
+  flex: none;
+  width: var(--box-w);
+  height: var(--box-h);
+  /* margin instead of gap so the track is exactly 2x the looping unit */
+  margin-right: var(--box-gap);
+  border: 0.2rem solid var(--box-border);
+  border-radius: 1rem;
+  background: var(--box-fill);
+}
+
+/* Placeholder name identifying each box (until real content goes in) */
+.box {
+  display: grid;
+  place-items: center;
+}
+
+.box__label {
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+/* Footer ----------------------------------------------------------------- */
+
+main {
+  flex: 1;
+}
+
+.footer {
+  padding: 1.25rem var(--gutter);
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.footer__text {
+  margin: 0;
+}
+
+/* The blend is on the text runs only, so the emoji keeps its true colors */
+.footer__emoji {
+  mix-blend-mode: normal;
+}
+
+/* Load-in fade ----------------------------------------------------------- */
+/* A full-screen cover that fades out, rather than fading the page itself,
+   so the blend modes behave the same during and after the fade. */
+
+.page-fade {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #18172a;
+  pointer-events: none;
+  animation: page-fade 0.6s ease-out 0.05s forwards;
+}
+
+@keyframes page-fade {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Responsive ------------------------------------------------------------- */
+
+/* Below the width where the three headers fit on one line: stack them,
+   with generous tap targets */
+@media (max-width: 1509.98px) { /* i.e. anything narrower than 1510px (the one-line nav needs ~1508px) */
+  .nav {
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: 0.75rem;
+  }
+
+  .nav a {
+    padding: 0.35rem 0; /* taller hit area without shifting the text */
+    white-space: nowrap; /* one line per header, icon stays attached */
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --gutter: 1.5rem;
+    --header-pad: 2rem;
+    --box-w: 27rem;
+    --box-h: 20rem;
+    --box-gap: 0.75rem;
+  }
+
+  .intro {
+    padding-top: 4rem;
+  }
+
+  /* Let the manual line breaks reflow on narrow screens */
+  .intro br {
+    display: none;
+  }
+}
+
+/* Mobile: smaller headers so each fits on one line */
+@media (max-width: 600px) {
+  .nav {
+    font-size: 1.9rem;
+  }
+
+  .intro {
+    padding-top: 4rem; /* gap below the header band */
+  }
+}
+
+@media (max-width: 360px) {
+  .nav {
+    font-size: 1.6rem;
+  }
+}
