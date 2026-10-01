@@ -13,7 +13,7 @@
   --box-fill: rgba(10, 16, 40, 0.14);
   --shadow: #202427;
   --band-line: rgba(236, 236, 236, 0.15);
-  --bg-tint: rgba(28, 24, 36, 0.75); /* higher alpha = fainter background */
+  --bg-tint: rgba(40, 44, 77, 0.4); /* higher alpha = fainter background */
 
   --gutter: 3rem;
   --header-pad: 2.9rem; /* space above the header text, mirrored below it */
@@ -172,8 +172,8 @@ body::after {
   content: "";
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 /* Thin, discreet light gray line on the edge facing the page content */
